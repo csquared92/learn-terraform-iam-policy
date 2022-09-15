@@ -15,11 +15,16 @@ resource "random_pet" "pet_name" {
 }
 
 resource "aws_iam_user" "new_user" {
-  name = "brs-user-api"
+  name = "cclement"
 }
 
 resource "aws_s3_bucket" "bucket" {
   bucket = "${random_pet.pet_name.id}-bucket"
+
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
 }
 
 resource "aws_s3_bucket_acl" "bucket" {
@@ -30,8 +35,8 @@ resource "aws_s3_bucket_acl" "bucket" {
 
 resource "aws_iam_policy" "policy" {
   name        = "${random_pet.pet_name.id}-policy"
-  description = "This is a test"
-  policy = data.aws_iam_policy_document.brs-user--api.json
+  description = "My test policy"
+  policy = data.aws_iam_policy_document.example.json
 }
 
 resource "aws_iam_user_policy_attachment" "attachment" {
