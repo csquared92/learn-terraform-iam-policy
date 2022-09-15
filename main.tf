@@ -15,16 +15,11 @@ resource "random_pet" "pet_name" {
 }
 
 resource "aws_iam_user" "new_user" {
-  name = "new_user"
+  name = "brs-user-api"
 }
 
 resource "aws_s3_bucket" "bucket" {
   bucket = "${random_pet.pet_name.id}-bucket"
-
-  tags = {
-    Name        = "My bucket"
-    Environment = "Dev"
-  }
 }
 
 resource "aws_s3_bucket_acl" "bucket" {
@@ -35,29 +30,25 @@ resource "aws_s3_bucket_acl" "bucket" {
 
 resource "aws_iam_policy" "policy" {
   name        = "${random_pet.pet_name.id}-policy"
-  description = "My test policy"
-
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "s3:ListAllMyBuckets"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "s3:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "${aws_s3_bucket.bucket.arn}"
-    }
-
-  ]
-}
-EOT
+  description = "This is a test"
+  policy = data.aws_iam_policy_document.brs-user--api.json
 }
 
+resource "aws_iam_user_policy_attachment" "attachment" {
+  user       = aws_iam_user.new_user.name
+  policy_arn = aws_iam_policy.policy.arn
+}
+
+
+data "aws_iam_policy_document" "example" {
+  statement {
+    actions   = ["s3:ListAllMyBuckets"]
+    resources = ["arn:aws:s3:::*"]
+    effect = "Allow"
+  }
+  statement {
+    actions   = ["s3:*"]
+    resources = [aws_s3_bucket.bucket.arn]
+    effect = "Allow"
+  }
+}
