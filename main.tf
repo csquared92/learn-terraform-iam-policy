@@ -1,15 +1,8 @@
 provider "aws" {
   region = var.region
-
-  default_tags {
-    tags = {
-      Hashicorp-Learn = "aws-iam-policy"
-    }
-  }
-
 }
 
-resource "random_pet" "pet_name" {
+resource "random_pet" "bucket_name" {
   length    = 3
   separator = "-"
 }
@@ -19,7 +12,7 @@ resource "aws_iam_user" "new_user" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "${random_pet.pet_name.id}-bucket"
+  bucket = "${random_pet.bucket_name.id}-bucket"
 
   tags = {
     Name        = "My bucket"
@@ -34,7 +27,7 @@ resource "aws_s3_bucket_acl" "bucket" {
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${random_pet.pet_name.id}-policy"
+  name        = "${random_pet.bucket_name.id}-policy"
   description = "My test policy"
   policy = data.aws_iam_policy_document.example.json
 }
